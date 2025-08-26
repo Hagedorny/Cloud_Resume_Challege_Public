@@ -16,13 +16,14 @@ terraform {
 // AWS Provider Configuration
 // ----------------------------
 provider "aws" {
-  region = "us-east-2"
+  region = var.aws_region
 }
 
 // ----------------------------
 // Local Variables
 // ----------------------------
 locals {
+  enabled    = var.create_examples
   site_files = fileset("${path.module}/../site", "**/*.*")
 }
 
@@ -247,7 +248,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "dynamodb:GetItem",
           "dynamodb:UpdateItem"
         ],
-        Resource = "arn:aws:dynamodb:us-east-2:${data.aws_caller_identity.current.account_id}:table/VisitorCount"
+        Resource = "arn:aws:dynamodb:var.aws_region:${data.aws_caller_identity.current.account_id}:table/VisitorCount"
       },
       {
         Effect = "Allow",
@@ -256,9 +257,9 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
-        Resource = "arn:aws:logs:us-east-2:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/UpdateVisitorCount:*"
+        Resource = "arn:aws:logs:var.aws_region:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/UpdateVisitorCount:*"
       }
     ]
   })
 }
- 
+
